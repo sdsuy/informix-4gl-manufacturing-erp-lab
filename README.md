@@ -34,7 +34,7 @@ The ERP currently stores:
 - Sales orders
 - Sales order items
 
-The first implemented 4GL program reads customer data from the Informix database and displays it in a terminal-based legacy style.
+The application now includes a terminal-based main menu that represents the entry point of a legacy ERP system.
 
 ---
 
@@ -70,6 +70,7 @@ Current programs:
 
 ```text
 src/customer_lookup.4gl
+src/main.4gl
 ```
 
 ### forms
@@ -84,6 +85,7 @@ Current binaries:
 
 ```text
 bin/customer_lookup
+bin/main
 ```
 
 ### docs
@@ -135,19 +137,26 @@ It demonstrates:
 - terminal output using `DISPLAY`
 - compilation with Aubit4GL
 
-The program currently looks up:
+### main.4gl
+
+Main ERP menu.
+
+It demonstrates:
+
+- terminal-based menu navigation
+- `MENU`
+- `COMMAND`
+- modular function calls
+- basic structure for a legacy ERP application
+
+Current menu options:
 
 ```text
-CUST-003
-```
-
-Expected output:
-
-```text
-Customer: Santiago Demo Customer
-Email   : santiago.demo@example.com
-City    : Montevideo
-Status  : A
+Customers
+Products
+Inventory
+Sales Orders
+Exit
 ```
 
 ---
@@ -186,12 +195,14 @@ Current phase demonstrates:
 - `SELECT ... INTO`
 - Terminal-based program execution
 - 4GL compilation inside Docker
+- Main menu structure
+- Legacy ERP module navigation
 
 Future phases will demonstrate:
 
 - Dynamic user input
 - INSERT / UPDATE / DELETE
-- Menus
+- Customer ABM
 - Forms (.per)
 - Reports
 - Stored procedures
@@ -209,25 +220,39 @@ Compile the customer lookup program:
 4glpc src/customer_lookup.4gl -o bin/customer_lookup
 ```
 
+Compile the main menu:
+
+```bash
+4glpc src/main.4gl -o bin/main
+```
+
 Aubit4GL may generate a warning file even when the program compiles successfully. Check the `.warn` file when needed.
 
 ---
 
 ## How to Run
 
-Run the compiled program:
+Run the customer lookup program:
 
 ```bash
 ./bin/customer_lookup
 ```
 
-Expected result:
+Run the main menu:
+
+```bash
+./bin/main
+```
+
+Expected main menu:
 
 ```text
-Customer: Santiago Demo Customer
-Email   : santiago.demo@example.com
-City    : Montevideo
-Status  : A
+Manufacturing ERP
+Customers
+Products
+Inventory
+Sales Orders
+Exit
 ```
 
 ---
@@ -264,15 +289,18 @@ Completed:
 
 ### Phase 3
 
-Next:
+Completed:
 
 - Main ERP menu
+- Module placeholders
+- Terminal-based navigation
 
 ### Phase 4
 
-Planned:
+Next:
 
 - Customer maintenance module
+- Customer create/list/search operations
 
 ### Phase 5
 
@@ -326,6 +354,6 @@ Planned:
 
 ## Current Status
 
-Phase 2 completed.
+Phase 3 completed.
 
-The project now has a working 4GL program that connects to the Informix database using an explicit Aubit4GL session, reads a customer using embedded SQL, and displays the result in the terminal.
+The project now has a working 4GL main menu that acts as the entry point for the manufacturing ERP lab.
