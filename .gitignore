@@ -1,6 +1,6 @@
 # Aubit4GL
-*.c
 *.ec
+*.ao
 *.o
 *.err
 *.warn

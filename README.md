@@ -11,7 +11,7 @@ This repository simulates the maintenance and evolution of a manufacturing and d
 The project demonstrates the type of work commonly performed by Informix/4GL developers:
 
 - Informix database schema management
-- Embedded SQL preparation
+- Embedded SQL
 - 4GL business programs
 - Terminal-based ERP workflows
 - Customer and product maintenance
@@ -26,7 +26,7 @@ The project demonstrates the type of work commonly performed by Informix/4GL dev
 
 A manufacturing and distribution company manages picture framing products through a legacy ERP system.
 
-The ERP stores:
+The ERP currently stores:
 
 - Customers
 - Products
@@ -34,7 +34,7 @@ The ERP stores:
 - Sales orders
 - Sales order items
 
-The objective is to maintain and extend the system while preserving compatibility with a traditional Informix-style architecture.
+The first implemented 4GL program reads customer data from the Informix database and displays it in a terminal-based legacy style.
 
 ---
 
@@ -66,6 +66,12 @@ db/003_seed_data.sql
 
 Informix 4GL source code.
 
+Current programs:
+
+```text
+src/customer_lookup.4gl
+```
+
 ### forms
 
 4GL form definitions.
@@ -73,6 +79,12 @@ Informix 4GL source code.
 ### bin
 
 Compiled programs.
+
+Current binaries:
+
+```text
+bin/customer_lookup
+```
 
 ### docs
 
@@ -108,22 +120,76 @@ sales_order_items
 
 ---
 
+## 4GL Programs
+
+### customer_lookup.4gl
+
+Simple customer lookup program.
+
+It demonstrates:
+
+- explicit Aubit4GL session handling
+- connection to `portfolio_db` as user `informix`
+- embedded SQL in a 4GL program
+- `SELECT ... INTO`
+- terminal output using `DISPLAY`
+- compilation with Aubit4GL
+
+The program currently looks up:
+
+```text
+CUST-003
+```
+
+Expected output:
+
+```text
+Customer: Santiago Demo Customer
+Email   : santiago.demo@example.com
+City    : Montevideo
+Status  : A
+```
+
+---
+
+## Aubit4GL Session Strategy
+
+This project uses explicit session handling instead of relying only on a top-level `DATABASE portfolio_db` statement.
+
+Reason:
+
+Inside the Docker development environment, using a direct database declaration may cause the runtime to try connecting as the operating system user, such as `root`. That user does not necessarily exist in the Informix database.
+
+The current approach is:
+
+```4gl
+OPEN SESSION session_id
+    TO DATABASE portfolio_db
+    AS USER "informix"
+    PASSWORD "in4mix"
+```
+
+This keeps the connection explicit and reproducible in the local Docker-based lab.
+
+---
+
 ## Informix / 4GL Skills Demonstrated
 
 Current phase demonstrates:
 
 - Informix database creation
 - Informix SQL schema definition
-- Primary keys
-- Foreign keys
-- Unique constraints
 - Sample ERP data preparation
-- Database foundation for embedded SQL programs
+- First 4GL source file
+- Aubit4GL explicit session connection
+- Embedded SQL in 4GL
+- `SELECT ... INTO`
+- Terminal-based program execution
+- 4GL compilation inside Docker
 
 Future phases will demonstrate:
 
-- Embedded SQL from 4GL programs
-- SELECT INTO
+- Dynamic user input
 - INSERT / UPDATE / DELETE
 - Menus
 - Forms (.per)
@@ -135,19 +201,34 @@ Future phases will demonstrate:
 
 ---
 
-## How to Apply Phase 1
+## How to Build
 
-Run the scripts inside the Informix environment.
-
-Example:
+Compile the customer lookup program:
 
 ```bash
-dbaccess - db/001_create_database.sql
-dbaccess portfolio_db db/002_create_tables.sql
-dbaccess portfolio_db db/003_seed_data.sql
+4glpc src/customer_lookup.4gl -o bin/customer_lookup
 ```
 
-Depending on the Docker container layout, you may need to copy the scripts into the container first or run them from a mounted project directory.
+Aubit4GL may generate a warning file even when the program compiles successfully. Check the `.warn` file when needed.
+
+---
+
+## How to Run
+
+Run the compiled program:
+
+```bash
+./bin/customer_lookup
+```
+
+Expected result:
+
+```text
+Customer: Santiago Demo Customer
+Email   : santiago.demo@example.com
+City    : Montevideo
+Status  : A
+```
 
 ---
 
@@ -173,14 +254,17 @@ Completed:
 
 ### Phase 2
 
-Next:
+Completed:
 
 - First 4GL program
 - Customer lookup using embedded SQL
+- Explicit Aubit4GL session connection
+- Aubit4GL compilation
+- Terminal execution
 
 ### Phase 3
 
-Planned:
+Next:
 
 - Main ERP menu
 
@@ -242,6 +326,6 @@ Planned:
 
 ## Current Status
 
-Phase 1 completed.
+Phase 2 completed.
 
-The project now has the initial Informix database schema and sample ERP data required to start building real 4GL programs.
+The project now has a working 4GL program that connects to the Informix database using an explicit Aubit4GL session, reads a customer using embedded SQL, and displays the result in the terminal.
