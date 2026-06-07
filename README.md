@@ -4,172 +4,112 @@ Portfolio project focused on legacy ERP development using Informix-style databas
 
 ---
 
-## Project Goal
+## Current Phase
 
-This repository simulates the maintenance and evolution of a manufacturing and distribution ERP system built with Informix 4GL.
+Phase 4 completed.
 
-The project demonstrates the type of work commonly performed by Informix/4GL developers:
-
-- Informix database schema management
-- Embedded SQL
-- 4GL business programs
-- Terminal-based ERP workflows
-- Customer and product maintenance
-- Inventory management
-- Reporting
-- Import/export routines
-- Legacy system documentation
+The project includes a functional `Customer Maintenance` terminal module using Aubit4GL, explicit sessions, a terminal window, cursor-based listing, aligned column output, and customer lookup.
 
 ---
 
-## Business Scenario
-
-A manufacturing and distribution company manages picture framing products through a legacy ERP system.
-
-The ERP currently stores:
-
-- Customers
-- Products
-- Inventory
-- Sales orders
-- Sales order items
-
-The application now includes a terminal-based main menu that represents the entry point of a legacy ERP system.
-
----
-
-## Repository Structure
-
-```text
-db/
-src/
-forms/
-bin/
-docs/
-scripts/
-samples/
-```
-
-### db
-
-Database creation scripts.
-
-Current scripts:
-
-```text
-db/001_create_database.sql
-db/002_create_tables.sql
-db/003_seed_data.sql
-```
-
-### src
-
-Informix 4GL source code.
-
-Current programs:
+## Current 4GL Programs
 
 ```text
 src/customer_lookup.4gl
+src/customer_maintenance.4gl
 src/main.4gl
 ```
 
-### forms
-
-4GL form definitions.
-
-### bin
-
-Compiled programs.
-
-Current binaries:
-
-```text
-bin/customer_lookup
-bin/main
-```
-
-### docs
-
-Functional and technical documentation.
-
-### scripts
-
-Utility scripts.
-
-### samples
-
-Sample import and export files.
-
 ---
 
-## Database
+## Customer Maintenance Module
 
-Current database:
+Program:
 
 ```text
-portfolio_db
+src/customer_maintenance.4gl
 ```
 
-Current tables:
+Current menu:
 
 ```text
-customers
-products
-inventory
-sales_orders
-sales_order_items
-```
-
----
-
-## 4GL Programs
-
-### customer_lookup.4gl
-
-Simple customer lookup program.
-
-It demonstrates:
-
-- explicit Aubit4GL session handling
-- connection to `portfolio_db` as user `informix`
-- embedded SQL in a 4GL program
-- `SELECT ... INTO`
-- terminal output using `DISPLAY`
-- compilation with Aubit4GL
-
-### main.4gl
-
-Main ERP menu.
-
-It demonstrates:
-
-- terminal-based menu navigation
-- `MENU`
-- `COMMAND`
-- modular function calls
-- basic structure for a legacy ERP application
-
-Current menu options:
-
-```text
-Customers
-Products
-Inventory
-Sales Orders
+Customer Maintenance
+List Customers
+Find Customer
 Exit
+```
+
+Implemented features:
+
+- list customers
+- find customer by code
+- explicit database session
+- terminal window with `OPEN WINDOW`
+- menu navigation
+- cursor-based listing
+- aligned column output using fixed screen positions
+- prompt-based input
+- pause before returning to the menu
+
+---
+
+## List Customers
+
+The listing uses a cursor:
+
+```4gl
+DECLARE customer_cursor CURSOR FOR
+    SELECT customer_code, name, city, status
+      FROM customers
+     ORDER BY customer_code
+```
+
+Rows are displayed using fixed screen coordinates per column:
+
+```4gl
+DISPLAY v_code CLIPPED AT v_line, 2
+DISPLAY v_name CLIPPED AT v_line, 14
+DISPLAY v_city CLIPPED AT v_line, 45
+DISPLAY v_status AT v_line, 62
+```
+
+This produces aligned terminal output without relying on manually padded strings.
+
+---
+
+## Find Customer
+
+The lookup prompts for a customer code:
+
+```text
+CUST-003
+```
+
+Expected result:
+
+```text
+Customer: Santiago Demo Customer
+Email   : santiago.demo@example.com
+City    : Montevideo
+Status  : A
+```
+
+---
+
+## Aubit4GL Window Strategy
+
+The module uses a smaller terminal window to avoid runtime window creation errors in constrained Docker terminals:
+
+```4gl
+OPEN WINDOW main_window AT 2,2
+    WITH 20 ROWS, 70 COLUMNS
 ```
 
 ---
 
 ## Aubit4GL Session Strategy
 
-This project uses explicit session handling instead of relying only on a top-level `DATABASE portfolio_db` statement.
-
-Reason:
-
-Inside the Docker development environment, using a direct database declaration may cause the runtime to try connecting as the operating system user, such as `root`. That user does not necessarily exist in the Informix database.
-
-The current approach is:
+This project uses explicit session handling:
 
 ```4gl
 OPEN SESSION session_id
@@ -178,7 +118,27 @@ OPEN SESSION session_id
     PASSWORD "in4mix"
 ```
 
-This keeps the connection explicit and reproducible in the local Docker-based lab.
+This avoids relying on the operating system user, such as `root`, when running inside Docker.
+
+---
+
+## Build
+
+Compile:
+
+```bash
+4glpc src/customer_maintenance.4gl -o bin/customer_maintenance
+```
+
+---
+
+## Run
+
+Execute:
+
+```bash
+./bin/customer_maintenance
+```
 
 ---
 
@@ -186,174 +146,35 @@ This keeps the connection explicit and reproducible in the local Docker-based la
 
 Current phase demonstrates:
 
-- Informix database creation
-- Informix SQL schema definition
-- Sample ERP data preparation
-- First 4GL source file
-- Aubit4GL explicit session connection
-- Embedded SQL in 4GL
-- `SELECT ... INTO`
-- Terminal-based program execution
-- 4GL compilation inside Docker
-- Main menu structure
-- Legacy ERP module navigation
-
-Future phases will demonstrate:
-
-- Dynamic user input
-- INSERT / UPDATE / DELETE
-- Customer ABM
-- Forms (.per)
-- Reports
-- Stored procedures
-- Transactions
-- Inventory workflows
-- Import/export processing
+- explicit database session handling
+- `OPEN WINDOW`
+- `CLEAR WINDOW`
+- terminal menu navigation
+- `PROMPT`
+- `DISPLAY AT`
+- `CLIPPED`
+- fixed-position column layout
+- cursor declaration
+- `FOREACH`
+- embedded SQL
+- basic customer inquiry workflow
 
 ---
 
-## How to Build
+## Roadmap
 
-Compile the customer lookup program:
+### Completed
 
-```bash
-4glpc src/customer_lookup.4gl -o bin/customer_lookup
-```
+- Phase 0: Repository initialization
+- Phase 1: Informix database schema and sample data
+- Phase 2: First 4GL customer lookup
+- Phase 3: Main ERP menu
+- Phase 4: Customer Maintenance module
 
-Compile the main menu:
+### Next
 
-```bash
-4glpc src/main.4gl -o bin/main
-```
+Phase 5:
 
-Aubit4GL may generate a warning file even when the program compiles successfully. Check the `.warn` file when needed.
-
----
-
-## How to Run
-
-Run the customer lookup program:
-
-```bash
-./bin/customer_lookup
-```
-
-Run the main menu:
-
-```bash
-./bin/main
-```
-
-Expected main menu:
-
-```text
-Manufacturing ERP
-Customers
-Products
-Inventory
-Sales Orders
-Exit
-```
-
----
-
-## Development Roadmap
-
-### Phase 0
-
-Completed:
-
-- Repository initialization
-- Project structure
-- Initial documentation
-
-### Phase 1
-
-Completed:
-
-- Informix database creation script
-- Core ERP tables
-- Sample customers
-- Sample products
-- Sample inventory
-
-### Phase 2
-
-Completed:
-
-- First 4GL program
-- Customer lookup using embedded SQL
-- Explicit Aubit4GL session connection
-- Aubit4GL compilation
-- Terminal execution
-
-### Phase 3
-
-Completed:
-
-- Main ERP menu
-- Module placeholders
-- Terminal-based navigation
-
-### Phase 4
-
-Next:
-
-- Customer maintenance module
-- Customer create/list/search operations
-
-### Phase 5
-
-Planned:
-
-- Customer ABM
-
-### Phase 6
-
-Planned:
-
-- Forms (.per)
-
-### Phase 7
-
-Planned:
-
-- Product maintenance
-
-### Phase 8
-
-Planned:
-
-- Inventory reporting
-
-### Phase 9
-
-Planned:
-
-- Sales order workflow
-
-### Phase 10
-
-Planned:
-
-- Stored procedures integration
-
-### Phase 11
-
-Planned:
-
-- Import/export processing
-
-### Phase 12
-
-Planned:
-
-- Documentation and portfolio polish
-
----
-
-## Current Status
-
-Phase 3 completed.
-
-The project now has a working 4GL main menu that acts as the entry point for the manufacturing ERP lab.
+- Create Customer
+- Update Customer
+- Deactivate Customer
