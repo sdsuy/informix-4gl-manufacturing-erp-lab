@@ -1,0 +1,16 @@
+# Aubit4GL
+*.c
+*.ec
+*.o
+*.err
+*.warn
+
+# binaries
+bin/*
+
+# logs
+*.log
+
+# exports
+samples/export/*
+!samples/export/.gitkeep
