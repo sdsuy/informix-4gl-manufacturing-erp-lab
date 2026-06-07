@@ -8,18 +8,17 @@ Portfolio project focused on legacy ERP development using Informix-style databas
 
 This repository simulates the maintenance and evolution of a manufacturing and distribution ERP system built with Informix 4GL.
 
-The project is designed as a realistic learning and portfolio exercise that demonstrates the type of work commonly performed by Informix/4GL developers:
+The project demonstrates the type of work commonly performed by Informix/4GL developers:
 
-- Database maintenance
-- Embedded SQL
-- 4GL programs
-- Terminal-based business applications
+- Informix database schema management
+- Embedded SQL preparation
+- 4GL business programs
+- Terminal-based ERP workflows
 - Customer and product maintenance
 - Inventory management
 - Reporting
-- Import and export routines
+- Import/export routines
 - Legacy system documentation
-- Business process analysis
 
 ---
 
@@ -33,8 +32,7 @@ The ERP stores:
 - Products
 - Inventory
 - Sales orders
-- Shipments
-- Reports
+- Sales order items
 
 The objective is to maintain and extend the system while preserving compatibility with a traditional Informix-style architecture.
 
@@ -55,6 +53,14 @@ samples/
 ### db
 
 Database creation scripts.
+
+Current scripts:
+
+```text
+db/001_create_database.sql
+db/002_create_tables.sql
+db/003_seed_data.sql
+```
 
 ### src
 
@@ -82,13 +88,41 @@ Sample import and export files.
 
 ---
 
+## Database
+
+Current database:
+
+```text
+portfolio_db
+```
+
+Current tables:
+
+```text
+customers
+products
+inventory
+sales_orders
+sales_order_items
+```
+
+---
+
 ## Informix / 4GL Skills Demonstrated
 
-Project initialization.
+Current phase demonstrates:
+
+- Informix database creation
+- Informix SQL schema definition
+- Primary keys
+- Foreign keys
+- Unique constraints
+- Sample ERP data preparation
+- Database foundation for embedded SQL programs
 
 Future phases will demonstrate:
 
-- Embedded SQL
+- Embedded SQL from 4GL programs
 - SELECT INTO
 - INSERT / UPDATE / DELETE
 - Menus
@@ -101,9 +135,27 @@ Future phases will demonstrate:
 
 ---
 
+## How to Apply Phase 1
+
+Run the scripts inside the Informix environment.
+
+Example:
+
+```bash
+dbaccess - db/001_create_database.sql
+dbaccess portfolio_db db/002_create_tables.sql
+dbaccess portfolio_db db/003_seed_data.sql
+```
+
+Depending on the Docker container layout, you may need to copy the scripts into the container first or run them from a mounted project directory.
+
+---
+
 ## Development Roadmap
 
 ### Phase 0
+
+Completed:
 
 - Repository initialization
 - Project structure
@@ -111,52 +163,78 @@ Future phases will demonstrate:
 
 ### Phase 1
 
-- Informix database creation
+Completed:
+
+- Informix database creation script
 - Core ERP tables
-- Sample data
+- Sample customers
+- Sample products
+- Sample inventory
 
 ### Phase 2
 
+Next:
+
 - First 4GL program
-- Customer lookup
+- Customer lookup using embedded SQL
 
 ### Phase 3
+
+Planned:
 
 - Main ERP menu
 
 ### Phase 4
 
+Planned:
+
 - Customer maintenance module
 
 ### Phase 5
+
+Planned:
 
 - Customer ABM
 
 ### Phase 6
 
+Planned:
+
 - Forms (.per)
 
 ### Phase 7
+
+Planned:
 
 - Product maintenance
 
 ### Phase 8
 
+Planned:
+
 - Inventory reporting
 
 ### Phase 9
+
+Planned:
 
 - Sales order workflow
 
 ### Phase 10
 
+Planned:
+
 - Stored procedures integration
 
 ### Phase 11
 
+Planned:
+
 - Import/export processing
 
 ### Phase 12
+
+Planned:
 
 - Documentation and portfolio polish
 
@@ -164,6 +242,6 @@ Future phases will demonstrate:
 
 ## Current Status
 
-Project initialized.
+Phase 1 completed.
 
-No database objects or 4GL programs have been implemented yet.
+The project now has the initial Informix database schema and sample ERP data required to start building real 4GL programs.
