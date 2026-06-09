@@ -6,9 +6,9 @@ Portfolio project focused on legacy ERP development using Informix-style databas
 
 ## Current Phase
 
-Phase 4 completed.
+Phase 5 completed.
 
-The project includes a functional `Customer Maintenance` terminal module using Aubit4GL, explicit sessions, a terminal window, cursor-based listing, aligned column output, and customer lookup.
+The project now includes a functional `Customer Maintenance` module with inquiry and maintenance operations.
 
 ---
 
@@ -36,35 +36,21 @@ Current menu:
 Customer Maintenance
 List Customers
 Find Customer
+Create Customer
+Update Customer
+Deactivate Customer
 Exit
 ```
 
-Implemented features:
-
-- list customers
-- find customer by code
-- explicit database session
-- terminal window with `OPEN WINDOW`
-- menu navigation
-- cursor-based listing
-- aligned column output using fixed screen positions
-- prompt-based input
-- pause before returning to the menu
-
 ---
 
-## List Customers
+## Implemented Features
 
-The listing uses a cursor:
+### List Customers
 
-```4gl
-DECLARE customer_cursor CURSOR FOR
-    SELECT customer_code, name, city, status
-      FROM customers
-     ORDER BY customer_code
-```
+Lists customers ordered by customer code.
 
-Rows are displayed using fixed screen coordinates per column:
+The output uses fixed screen coordinates to keep columns aligned:
 
 ```4gl
 DISPLAY v_code CLIPPED AT v_line, 2
@@ -73,32 +59,56 @@ DISPLAY v_city CLIPPED AT v_line, 45
 DISPLAY v_status AT v_line, 62
 ```
 
-This produces aligned terminal output without relying on manually padded strings.
+### Find Customer
 
----
+Prompts for a customer code and displays customer details.
 
-## Find Customer
-
-The lookup prompts for a customer code:
+Example:
 
 ```text
 CUST-003
 ```
 
-Expected result:
+### Create Customer
+
+Prompts for:
 
 ```text
-Customer: Santiago Demo Customer
-Email   : santiago.demo@example.com
-City    : Montevideo
-Status  : A
+Customer code
+Name
+Email
+City
 ```
+
+Then inserts a new active customer.
+
+### Update Customer
+
+Prompts for a customer code, displays the current data, then allows updating:
+
+```text
+Name
+Email
+City
+```
+
+### Deactivate Customer
+
+Marks a customer as inactive instead of deleting the row:
+
+```sql
+UPDATE customers
+   SET status = 'I'
+ WHERE customer_code = ...
+```
+
+This reflects a common ERP/legacy-system practice where records are preserved for audit and historical reporting.
 
 ---
 
 ## Aubit4GL Window Strategy
 
-The module uses a smaller terminal window to avoid runtime window creation errors in constrained Docker terminals:
+The module uses a small terminal window suitable for Docker terminal execution:
 
 ```4gl
 OPEN WINDOW main_window AT 2,2
@@ -142,6 +152,43 @@ Execute:
 
 ---
 
+## Suggested Manual Tests
+
+### Create a customer
+
+```text
+Customer code: CUST-004
+Name         : South Frame Store
+Email        : orders@southframe.example
+City         : Miami
+```
+
+### Find the new customer
+
+```text
+CUST-004
+```
+
+### Update the customer
+
+Change name, email, or city.
+
+### Deactivate the customer
+
+Deactivate:
+
+```text
+CUST-004
+```
+
+Then list customers and verify that status changed to:
+
+```text
+I
+```
+
+---
+
 ## Informix / 4GL Skills Demonstrated
 
 Current phase demonstrates:
@@ -157,7 +204,11 @@ Current phase demonstrates:
 - cursor declaration
 - `FOREACH`
 - embedded SQL
-- basic customer inquiry workflow
+- `SELECT ... INTO`
+- `INSERT`
+- `UPDATE`
+- customer maintenance workflow
+- soft delete / deactivate pattern
 
 ---
 
@@ -169,12 +220,14 @@ Current phase demonstrates:
 - Phase 1: Informix database schema and sample data
 - Phase 2: First 4GL customer lookup
 - Phase 3: Main ERP menu
-- Phase 4: Customer Maintenance module
+- Phase 4: Customer Maintenance inquiry module
+- Phase 5: Customer create, update, and deactivate operations
 
 ### Next
 
-Phase 5:
+Phase 6:
 
-- Create Customer
-- Update Customer
-- Deactivate Customer
+- Product Maintenance
+- Product listing
+- Product lookup
+- Product create/update/deactivate operations
